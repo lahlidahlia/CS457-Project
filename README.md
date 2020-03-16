@@ -8,6 +8,12 @@ sequentially from left to right as you read.
 The _ operator is an extra operator to concatenate two digits. Ex: 4 _ 2 = 42
 1 _ 9 _ 9 _ 3 % 2 _ 9 -> 1993 %2 _ 9 -> 1 _ 9 -> 19
 
+You might run into max recursive stack error, this is just because I used 
+recursion as a main loop, which may or may not take a while. If this happens,
+try increasing your allowed stack size, increase the generation size
+(in main.py, but make sure generation size isn't larger than your stack size,
+or you'll get a max stack error).
+
 Instructions
 -----------
 Python 3
