@@ -17,7 +17,7 @@ def assign_fitness(generation, target):
 
 
 def roulette(generation):
-    # Generation is {child : fitness, ...}
+    # generation is {child : fitness, ...}
     fit_sum = sum(generation.values())
     return roulette_(iter(generation.items()), random(), fit_sum, 0)
 
@@ -37,16 +37,19 @@ def generate_chrom(_mutate, _crossover, generation):
 
 def new_generation(from_gen, amount, _mutate, _crossover):
     # from_gen is {child : fitness, ...}
-    #pdb.set_trace()
     return flatten([[child for child in generate_chrom(_mutate, _crossover, from_gen)] 
              for _ in range(amount//2)])
 
 
+def get_max(gen):
+    # Shortened function to get the highest fitness chromosome.
+    return max(gen, key=gen.get)
+
 def gen_alg(_mutate, _crossover, gen_size, target, generation):
+    # Main loop. Generate new generations and stop when an answer is found.
     fit_gen = assign_fitness(generation, target)
-    print(evaluate(max(fit_gen)))
-    return decode(to_list(max(fit_gen))) \
-           if evaluate(max(fit_gen)) == target \
+    return decode(to_list(get_max(fit_gen))) \
+           if evaluate(get_max(fit_gen)) == target \
            else gen_alg(_mutate, _crossover, gen_size, target,
                          new_generation(fit_gen, 
                                         gen_size, 

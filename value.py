@@ -19,9 +19,11 @@ class Value(Monoid):
 
     @staticmethod
     def mzero():
+        # Identity
         return Value((Nothing, '_'))
 
     def mplus(self, other):
+        # Combination operator.
         self_digit = self.getValue()[0]
         self_op = self.getValue()[1]
         other_digit = other.getValue()[0]
@@ -134,8 +136,13 @@ def decode(chrom):
 def evaluate_values(xs):
     return reduce(lambda x, y: x + y, xs)
 
+# Evaluate a chromosome and return the digit value.
 evaluate = v * evaluate_values * decode
 
+
+# Reduce tokens and its extra is a DFA to generate printable expression to
+# be displayed as the result. It cuts out extra tokens that gets removed when
+# evaluated so that the result print out can be clean.
 def reduce_tokens(x, ys):
     if not ys:
         if x in '0123456789':
@@ -146,6 +153,7 @@ def reduce_tokens(x, ys):
         return x + reduce_tokens_after_digits(ys[0], ys[1:])
     else:
         return reduce_tokens(ys[0], ys[1:])
+
 
 def reduce_tokens_after_digits(x, ys):
     if not ys:
@@ -162,7 +170,8 @@ def reduce_tokens_after_digits(x, ys):
         return reduce_tokens_after_digits(ys[0], ys[1:])
     elif x in '/%' and ys[0] == '0':
         # Divide by zero.
-        return reduce_tokens_after_digits(ys[0], ys[1:])
+        # Skip 0.
+        return reduce_tokens_after_digits(x, ys[1:])
     elif x in '+-*/%_' and ys[0] in '0123456789':
         return x + reduce_tokens_after_digits(ys[0], ys[1:])
     else:
@@ -171,8 +180,11 @@ def reduce_tokens_after_digits(x, ys):
 
 
 def printable_expression(xs):
+    # Produce something printable for debugging.
     return ''.join(['{} {} '.format(v(x) if x.getValue()[0].getValue() != None else '', x.getValue()[1]) for x in xs])
 
+
 def reduced_expression(exp):
+    # Produce a printable that is suitable for displaying as a final solution.
     _exp = exp.replace(' ', '')
     return ' '.join(reduce_tokens(_exp[0], _exp[1:]))
